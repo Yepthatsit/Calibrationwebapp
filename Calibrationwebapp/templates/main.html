@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- PAMIĘTAJ ŻEBY LOCALHOSTA ZAMIOENIĆ NA ADRES IP SERWERA USTAWIĆ MU STATYCZNY I W FIREWALLU DODAĆ PROTOKÓŁ
+    NA PORT 6009 -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calibration</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+</style>
+</head>
+<body>
+
+<!-- Your form elements, including a file input -->
+<form id="uploadForm" enctype="multipart/form-data">
+    <!-- File input -->
+    <input type="file" id="fileInput" name="fileInput">
+    <!-- Your button to trigger file upload -->
+    <button type="button" onclick="uploadFile()">Upload File</button>
+    <br><br>
+    <button type = "button" , onclick = "Create_sorted()">Sort</button>
+    <button type = "button", onclick = "results()">Render resoults</button>
+    <br><br>
+    <a href = http://localhost:6009/api/sendimage>
+    <button type = "button">Download extrapolation image</button>
+    </a>
+    <a href = http://localhost:6009/api/LSCIFILE>
+    <button type = "button">Download Lakeshore file</button>
+    </a><br><br>
+    <button type = "button", onclick = "cleared()">Clear files</button>
+</form>
+
+<script>
+function uploadFile() {
+    // Get the file input element and other form data
+    var fileInput = document.getElementById('fileInput');
+
+    // Create a FormData object to send files and additional data
+    var formData = new FormData();
+    formData.append('fileInput', fileInput.files[0]);
+
+    // API endpoint URL
+    var apiUrl = 'http://localhost:6009/api/upload';
+
+    // Request options
+    var requestOptions = {
+        method: 'POST',
+        body: formData,
+        // Other options like headers, mode, cache, etc., can be added as needed
+    };
+
+    // Make the API request using the fetch function
+    fetch(apiUrl, requestOptions)
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Error: ' + response.status + ' ' + response.statusText);
+            }
+        })
+        .then(data => {
+            console.log('API response:', data);
+            if (!data["Exist"]){
+                alert("file uploaded");
+            }
+            else{
+                alert("file already uploaded!");
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+function Create_sorted(){
+    alert("Sorting... Please press ok and wait");
+    var requestOptions = {
+        method: 'GET',
+        // Other options like headers, mode, cache, etc., can be added as needed
+    };
+    var apiUrl = 'http://localhost:6009/api/createsorted';
+    // Make the API request using the fetch function
+    fetch(apiUrl, requestOptions)
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Error: ' + response.status + ' ' + response.statusText);
+            }
+        })
+        .then(data => {
+            console.log('API response:', data);
+            if (data["Sorted"]){
+                alert("Sorted!");
+            }
+            else if(!data["ready"]){
+                alert("please clear file");
+            }
+            else{
+                alert("No files uploaded");
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+function results(){
+    alert("Rendering... Please press ok and wait.")
+    var requestOptions = {
+        method: 'GET',
+        // Other options like headers, mode, cache, etc., can be added as needed
+    };
+    var apiUrl = 'http://localhost:6009/api/renderresults';
+    // Make the API request using the fetch function
+    fetch(apiUrl, requestOptions)
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Error: ' + response.status + ' ' + response.statusText);
+            }
+        })
+        .then(data => {
+            console.log('API response:', data);
+            if (data["Rendered"]){
+                alert("Rendered!");
+            }
+            else{
+                alert("No sorted file, please create sorted first");
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+function cleared(){
+    var requestOptions = {
+        method: 'GET',
+        // Other options like headers, mode, cache, etc., can be added as needed
+    };
+    var apiUrl = 'http://localhost:6009/api/clear';
+    // Make the API request using the fetch function
+    fetch(apiUrl, requestOptions)
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Error: ' + response.status + ' ' + response.statusText);
+            }
+        })
+        .then(data => {
+            console.log('API response:', data);
+            if (data["Cleared"]){
+                alert("Cleared!");
+            }
+            else{
+                alert("I have nno idea what just happended and why. This was supposed to always work");
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+</script>
+
+</body>
+</html>
