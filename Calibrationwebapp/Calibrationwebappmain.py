@@ -39,26 +39,12 @@ def create_sorted():
         path = f'{os.path.dirname(os.path.abspath(__file__)).replace("\\","/")}/uploadedfiles'
         datfiles = []
         allfiles = os.listdir(path)
-        sorted = open(f"{os.path.dirname(os.path.abspath(__file__)).replace("\\","/")}/sorted/sorted.dat","a")
         for file in allfiles:
             if ".dat" in file:
                 datfiles.append(pd.read_csv(f"{path}/{file}",sep=" "))
-        writelist(sorted,list(datfiles[0].columns))
-        while len(datfiles)!=0:
-            fileindex = 0
-            filesmaxval = max(list(datfiles[fileindex].loc[:,"T_B[K]"]))
-            withinfileindex = datfiles[fileindex].index[datfiles[fileindex]["T_B[K]"] == filesmaxval].tolist()[0]
-            for i in range(len(datfiles)):
-                m =max(datfiles[i].loc[:,"T_B[K]"])
-                if m>filesmaxval:
-                    fileindex = i
-                    filesmaxval = m
-                    withinfileindex = datfiles[i].index[datfiles[i]["T_B[K]"] == filesmaxval].tolist()[0]
-            writelist(sorted,list(datfiles[fileindex].loc[withinfileindex,:]))
-            datfiles[fileindex] = datfiles[fileindex].drop(withinfileindex,axis = "rows")
-            if len(datfiles[fileindex].loc[:,"T_B[K]"]) == 0:
-                datfiles.pop(fileindex)
-        sorted.close()
+        results = pd.concat(datfiles)
+        sorted = results.sort_values("T_B[K]",ascending=False)
+        sorted.to_csv(path_or_buf=f"{os.path.dirname(os.path.abspath(__file__)).replace("\\","/")}/sorted/sorted.dat",sep= " ", index= False)
         return jsonify({"Sorted":True,"ready":True})
     else:
         return jsonify({"Sorted":False,"ready":True})
