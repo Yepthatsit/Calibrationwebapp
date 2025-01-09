@@ -97,7 +97,7 @@ def renderresults():
             #
             noumbers = list(range(1,len(values)+1))
             extrapolated_values = fitted(values)
-            logValues = ["{:.9f}".format(math.log(i)) for i in extrapolated_values]
+            logValues = ["{:.9f}".format(math.log10(i)) for i in extrapolated_values]
             lscifile = open(f"{generalpath}/Lakeshorefile/{sensor}.340","a")
             lscifile.write(f'Sensor Model:	-------\nSerial Number:	-------\nData Format:	4	(Log Ohms/Kelvin)\nSetPoint Limit:	{values[0]}	(Kelvin)\nTemperature coefficient:  ---------\nNumber of Breakpoints:	{len(values)}\n\nNo.	Units	Temperature (K)\n\n')
             for num,logval, temp in zip(noumbers,logValues,values):
